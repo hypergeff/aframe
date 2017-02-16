@@ -13,21 +13,18 @@ module.exports.updateMapMaterialFromData = function (materialName, dataName, sha
   var shadowSrcName = '_texture_' + dataName;
 
   if (src) {
+    // Return if material has not changed
     if (src === shader[shadowSrcName]) { return; }
-    // Texture added or changed.
-    shader[shadowSrcName] = src;
     if (src instanceof THREE.Texture) { setMap(src); return; }
     el.sceneEl.systems.material.loadTexture(src, {src: src, repeat: data.repeat, offset: data.offset, npot: data.npot}, setMap);
     return;
+  } else {
+    src = null;
+    setMap(src);
   }
 
-  // Texture removed.
-  if (!material[materialName]) { return; }
-  shader[shadowSrcName] = null;
-  setMap(null);
-
   function setMap (texture) {
-    if (shader[shadowSrcName] !== src) { return; }
+    shader[shadowSrcName] = src;
     material[materialName] = texture;
     material.needsUpdate = true;
     handleTextureEvents(el, texture);
